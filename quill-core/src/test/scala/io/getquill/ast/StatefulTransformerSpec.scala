@@ -274,28 +274,28 @@ class StatefulTransformerSpec extends Spec {
       }
     }
 
-//    "block" in {
-//      val ast: Ast = Block(List(
-//        Val(Ident("a"), Entity("a")),
-//        Val(Ident("b"), Entity("b"))
-//      ))
-//      Subject(Nil, Entity("a") -> Entity("b"), Entity("b") -> Entity("c"))(ast) match {
-//        case (at, att) =>
-//          at mustEqual Block(List(
-//            Val(Ident("a"), Entity("b")),
-//            Val(Ident("b"), Entity("c"))
-//          ))
-//          att.state mustEqual List(Entity("a"), Entity("b"))
-//      }
-//    }
-//
-//    "val" in {
-//      val ast: Ast = Val(Ident("a"), Entity("a"))
-//      Subject(Nil, Entity("a") -> Entity("b"))(ast) match {
-//        case (at, att) =>
-//          at mustEqual Val(Ident("a"), Entity("b"))
-//          att.state mustEqual List(Entity("a"))
-//      }
-//    }
+    "block" in {
+      val ast: Ast = Block(List(
+        Val(Ident("a"), Entity("a", Nil)),
+        Val(Ident("b"), Entity("b", Nil))
+      ))
+      Subject(Nil, Entity("a", Nil) -> Entity("b", Nil), Entity("b", Nil) -> Entity("c", Nil))(ast) match {
+        case (at, att) =>
+          at mustEqual Block(List(
+            Val(Ident("a"), Entity("b", Nil)),
+            Val(Ident("b"), Entity("c", Nil))
+          ))
+          att.state mustEqual List(Entity("a", Nil), Entity("b", Nil))
+      }
+    }
+
+    "val" in {
+      val ast: Ast = Val(Ident("a"), Entity("a", Nil))
+      Subject(Nil, Entity("a", Nil) -> Entity("b", Nil))(ast) match {
+        case (at, att) =>
+          at mustEqual Val(Ident("a"), Entity("b", Nil))
+          att.state mustEqual List(Entity("a", Nil))
+      }
+    }
   }
 }

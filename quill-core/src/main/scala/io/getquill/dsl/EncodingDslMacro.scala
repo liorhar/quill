@@ -26,11 +26,11 @@ class EncodingDslMacro(val c: MacroContext) {
       case Some(enc) =>
         q"${c.prefix}.${TermName(s"${method}Scalar")}($v)($enc)"
       case None =>
-//        t.tpe.baseType(c.symbolOf[Product]) match {
-//          case NoType => fail("Encoder", t.tpe)
-//          case _ =>
-            q"${c.prefix}.${TermName(s"${method}CaseClass")}($v)"
-//        }
+        //        t.tpe.baseType(c.symbolOf[Product]) match {
+        //          case NoType => fail("Encoder", t.tpe)
+        //          case _ =>
+        q"${c.prefix}.${TermName(s"${method}CaseClass")}($v)"
+      //        }
     }
 
   private def fail(enc: String, t: Type) =

@@ -9,10 +9,10 @@ private[dsl] trait QueryDsl {
   dsl: CoreDsl =>
 
   def query[T]: EntityQuery[T] = macro QueryDslMacro.expandEntity[T]
-  
+
   @compileTimeOnly(NonQuotedException.message)
-  def query[T](entity: String, propertyAlias: (T => (Any, String))*): EntityQuery[T] = NonQuotedException()
-    
+  def querySchema[T](entity: String, columns: (T => (Any, String))*): EntityQuery[T] = NonQuotedException()
+
   sealed trait Query[+T] {
 
     def map[R](f: T => R): Query[R]
@@ -75,7 +75,7 @@ private[dsl] trait QueryDsl {
 
     def delete: Delete[T]
   }
-  
+
   sealed trait Action[E]
 
   sealed trait Insert[E] extends Action[E] {

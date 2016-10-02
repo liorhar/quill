@@ -20,7 +20,7 @@ object Messages {
 
     def info(msg: String): Unit =
       c.info(c.enclosingPosition, msg, force = true)
-      
+
     def debug[T](v: T): T = {
       info(v.toString)
       v

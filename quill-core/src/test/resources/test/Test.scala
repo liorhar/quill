@@ -10,6 +10,9 @@ object Test extends App {
   
   case class Person(name: String, age: Int)
   
-  materializeEntityMeta[Person]
+//  val q = quote {
+//    query[Person]
+//  }
+  
   println(run(query[Person].delete))
 }

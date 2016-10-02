@@ -31,14 +31,19 @@ class MetaDslMacro(val c: MacroContext) {
       }
     """
 
-  def materializeEntityMeta[T](implicit t: WeakTypeTag[T]): Tree =
-    q"""
-      new ${c.prefix}.EntityMeta[$t] {
-        override val entity =
-          ${c.prefix}.quote(${c.prefix}.query[$t](${t.tpe.typeSymbol.name.decodedName.toString}))
-      }
-    """
-    
+  def materializeSchemaMeta[T](implicit t: WeakTypeTag[T]): Tree =
+    (t.tpe.typeSymbol.isClass && t.tpe.typeSymbol.asClass.isCaseClass) match {
+      case true =>
+        q"""
+          new ${c.prefix}.SchemaMeta[$t] {
+            override val entity =
+              ${c.prefix}.quote(${c.prefix}.querySchema[$t](${t.tpe.typeSymbol.name.decodedName.toString}))
+          }
+        """
+      case false =>
+        c.fail(s"Can't materialize a `SchemaMeta` for non-case-class type '${t.tpe}', please provide an implicit `SchemaMeta`.")
+    }
+
   private def expandQuery[T](value: Value)(implicit t: WeakTypeTag[T]) = {
     val elements = flatten(q"x", value)
     q"${c.prefix}.quote((q: ${c.prefix}.Query[$t]) => q.map(x => io.getquill.dsl.UnlimitedTuple(..$elements)))"
@@ -97,7 +102,7 @@ class MetaDslMacro(val c: MacroContext) {
   def flatten(base: Tree, value: Value): List[Tree] = {
     def nest(tree: Tree, term: Option[TermName]) =
       term match {
-        case None => tree
+        case None       => tree
         case Some(term) => q"$tree.$term"
       }
     def apply(base: Tree, params: List[List[Value]]): List[Tree] =
@@ -134,7 +139,8 @@ class MetaDslMacro(val c: MacroContext) {
                 apply(
                   param.typeSignature.asSeenFrom(tpe, tpe.typeSymbol),
                   Some(param.name.toTermName),
-                  nested = !isTuple(tpe))
+                  nested = !isTuple(tpe)
+                )
               }
             }
           Nested(term, tpe, params)
@@ -149,7 +155,8 @@ class MetaDslMacro(val c: MacroContext) {
             case tpe if (!is[MetaDsl#Embedded](tpe) && nested) =>
               c.fail(
                 s"Can't expand nested value '$tpe', please make it an `Embedded` " +
-                  s"case class or provide an implicit $encoding for it.")
+                  s"case class or provide an implicit $encoding for it."
+              )
 
             case tpe if (is[Option[Any]](tpe)) =>
               val nested = nest(tpe.typeArgs.head, term)

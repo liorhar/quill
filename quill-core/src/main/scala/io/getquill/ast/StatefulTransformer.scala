@@ -109,7 +109,7 @@ trait StatefulTransformer[T] {
         val (at, att) = apply(a)
         (Nested(at), att)
     }
-  
+
   def apply(e: Assignment): (Assignment, StatefulTransformer[T]) =
     e match {
       case Assignment(a, b, c) =>

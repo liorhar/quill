@@ -17,35 +17,35 @@ class QuotationSpec extends Spec {
   "quotes and unquotes asts" - {
 
     "query" - {
-//      "entity" - {
-//        "without aliases" in {
-//          quote(unquote(qr1)).ast mustEqual Entity("TestEntity", Nil)
-//        }
-//        "with alias" in {
-//          val q = quote {
-//            query[TestEntity].schema(_.entity("SomeAlias"))
-//          }
-//          quote(unquote(q)).ast mustEqual ConfiguredEntity(SimpleEntity("TestEntity", Nil), Some("SomeAlias"))
-//        }
-//        "with property alias" in {
-//          val q = quote {
-//            query[TestEntity].schema(_.entity("SomeAlias").columns(_.s -> "theS", _.i -> "theI"))
-//          }
-//          quote(unquote(q)).ast mustEqual ConfiguredEntity(Entity("TestEntity", Nil), Some("SomeAlias"), List(PropertyAlias(List("s"), "theS"), PropertyAlias(List("i"), "theI")))
-//        }
-//        "explicit `Predef.ArrowAssoc`" in {
-//          val q = quote {
-//            query[TestEntity].schema(_.columns(e => Predef.ArrowAssoc(e.s). -> [String]("theS")))
-//          }
-//          quote(unquote(q)).ast mustEqual ConfiguredEntity(Entity("TestEntity", Nil), properties = List(PropertyAlias(List("s"), "theS")))
-//        }
-//        "with property alias and unicode arrow" in {
-//          val q = quote {
-//            query[TestEntity].schema(_.entity("SomeAlias").columns(_.s → "theS", _.i → "theI"))
-//          }
-//          quote(unquote(q)).ast mustEqual ConfiguredEntity(Entity("TestEntity", Nil), Some("SomeAlias"), List(PropertyAlias(List("s"), "theS"), PropertyAlias(List("i"), "theI")))
-//        }
-//      }
+      "schema" - {
+        "without aliases" in {
+          quote(unquote(qr1)).ast mustEqual Entity("TestEntity", Nil)
+        }
+        "with alias" in {
+          val q = quote {
+            querySchema[TestEntity]("SomeAlias")
+          }
+          quote(unquote(q)).ast mustEqual Entity("SomeAlias", Nil)
+        }
+        "with property alias" in {
+          val q = quote {
+            querySchema[TestEntity]("SomeAlias", _.s -> "theS", _.i -> "theI")
+          }
+          quote(unquote(q)).ast mustEqual Entity("SomeAlias", List(PropertyAlias(List("s"), "theS"), PropertyAlias(List("i"), "theI")))
+        }
+        "explicit `Predef.ArrowAssoc`" in {
+          val q = quote {
+            querySchema[TestEntity]("TestEntity", e => Predef.ArrowAssoc(e.s). -> [String]("theS"))
+          }
+          quote(unquote(q)).ast mustEqual Entity("TestEntity", List(PropertyAlias(List("s"), "theS")))
+        }
+        "with property alias and unicode arrow" in {
+          val q = quote {
+            querySchema[TestEntity]("SomeAlias", _.s → "theS", _.i → "theI")
+          }
+          quote(unquote(q)).ast mustEqual Entity("SomeAlias", List(PropertyAlias(List("s"), "theS"), PropertyAlias(List("i"), "theI")))
+        }
+      }
       "filter" in {
         val q = quote {
           qr1.filter(t => t.s == "s")
@@ -766,11 +766,12 @@ class QuotationSpec extends Spec {
       }
       "type param" - {
         "simple" in {
-          def test[T: QueryMeta] = quote(query[T])
+          def test[T: SchemaMeta] = quote(query[T])
+
           test[TestEntity].ast mustEqual Entity("TestEntity", Nil)
         }
         "nested" in {
-          def test[T: QueryMeta] = quote(query[T].map(t => 1))
+          def test[T: SchemaMeta] = quote(query[T].map(t => 1))
           test[TestEntity].ast mustEqual Map(Entity("TestEntity", Nil), Ident("t"), Constant(1))
         }
       }
