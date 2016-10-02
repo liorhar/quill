@@ -27,15 +27,6 @@ class QueryDslSpec extends Spec {
       }
       q.ast mustEqual u.ast
     }
-    //    "dynamic" in {
-    //      def dyn[T: EntityMeta : InsertMeta](t: T) =
-    //        quote {
-    //          query[T].insert(lift(t))
-    //        }
-    //      
-    //      val q = quote(dyn(TestEntity("s", 1, 2L, Some(3))))
-    //      testContext.run(q).string mustEqual ""
-    //    }
   }
 
   "expands updates" - {

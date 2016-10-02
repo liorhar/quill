@@ -137,15 +137,14 @@ class ContextMacroSpec extends Spec {
         r.string mustEqual """querySchema("TestEntity").filter(t => t.s == ?).map(t => (t.s, t.i, t.l, t.o))"""
         r.prepareRow mustEqual Row("a")
       }
-      //      "dynamic type param" in {
-      //        def test[T: QueryMeta] = quote {
-      //          query[T].map(t => lift(1))
-      //        }
-      //        materializeQueryMeta[TestEntity]
-      //        val r = testContext.run(test[TestEntity])
-      //        r.string mustEqual """querySchema("TestEntity").map(t => ?)"""
-      //        r.prepareRow mustEqual Row(1)
-      //      }
+      "dynamic type param" in {
+        def test[T: SchemaMeta: QueryMeta] = quote {
+          query[T].map(t => lift(1))
+        }
+        val r = testContext.run(test[TestEntity])
+        r.string mustEqual """querySchema("TestEntity").map(t => ?)"""
+        r.prepareRow mustEqual Row(1)
+      }
     }
     "aggregated" in {
       val q = quote {

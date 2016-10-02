@@ -59,9 +59,9 @@ class EncodingDslSpec extends Spec {
           value mustEqual t
       }
     }
-    //    "failure (no encoder, not case class)" in {
-    //      "quote(lift(this))" mustNot compile
-    //    }
+    "failure (no encoder, not case class)" in {
+      "quote(lift(this))" mustNot compile
+    }
   }
 
   "materializes encoding for AnyVal" - {
