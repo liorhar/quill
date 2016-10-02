@@ -1,7 +1,6 @@
 package io.getquill.dsl
 
 import scala.language.experimental.macros
-import scala.reflect.ClassTag
 
 import io.getquill.quotation.NonQuotedException
 import scala.annotation.compileTimeOnly
@@ -10,7 +9,7 @@ private[dsl] trait QueryDsl {
   dsl: CoreDsl =>
 
   @compileTimeOnly(NonQuotedException.message)
-  def query[T](implicit ct: ClassTag[T]): EntityQuery[T] = NonQuotedException()
+  def query[T]: EntityQuery[T] = NonQuotedException()
 
   sealed trait Query[+T] {
 

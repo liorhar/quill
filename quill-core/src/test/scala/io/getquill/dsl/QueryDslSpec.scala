@@ -1,5 +1,6 @@
 package io.getquill.dsl
 
+import io.getquill.testContext
 import io.getquill.testContext._
 import io.getquill.Spec
 
@@ -26,6 +27,16 @@ class QueryDslSpec extends Spec {
         (t: TestEntity) => qr1.insert(v => v.i -> t.i)
       }
       q.ast mustEqual u.ast
+    }
+    "dynamic" in {
+      def dyn[T: InsertMeta](t: T) =
+        quote {
+          query[T].insert(lift(t))
+        }
+      
+      val q = quote(dyn(TestEntity("s", 1, 2L, Some(3))))
+      println(q)
+      testContext.run(q).string mustEqual ""
     }
   }
 

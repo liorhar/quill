@@ -1,7 +1,5 @@
 package io.getquill.context
 
-import scala.reflect.ClassTag
-
 import io.getquill.Spec
 import io.getquill.testContext
 import io.getquill.testContext._
@@ -33,7 +31,7 @@ class ContextMacroSpec extends Spec {
           "query[TestEntity].delete"
       }
       "dynamic type param" in {
-        def test[T: ClassTag] = quote(query[T].delete)
+        def test[T: DeleteMeta] = quote(query[T].delete)
         val r = testContext.run(test[TestEntity])
         r.string mustEqual "query[TestEntity].delete"
       }
@@ -65,7 +63,7 @@ class ContextMacroSpec extends Spec {
       }
       "dynamic type param" in {
         import language.reflectiveCalls
-        def test[T <: { def i: Int }: ClassTag] = quote {
+        def test[T <: { def i: Int }: DeleteMeta] = quote {
           query[T].filter(t => t.i == lift(1)).delete
         }
         val r = testContext.run(test[TestEntity])
@@ -99,7 +97,7 @@ class ContextMacroSpec extends Spec {
           "query[TestEntity].map(t => t.s)"
       }
       "dynamic type param" in {
-        def test[T: ClassTag] = quote(query[T])
+        def test[T: QueryMeta] = quote(query[T])
         val r = testContext.run(test[TestEntity])
         r.string mustEqual "query[TestEntity].map(x => (x.s, x.i, x.l, x.o))"
       }
@@ -140,7 +138,7 @@ class ContextMacroSpec extends Spec {
         r.prepareRow mustEqual Row("a")
       }
       "dynamic type param" in {
-        def test[T: ClassTag] = quote {
+        def test[T: QueryMeta] = quote {
           query[T].map(t => lift(1))
         }
         val r = testContext.run(test[TestEntity])

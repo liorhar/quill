@@ -4,7 +4,6 @@ import scala.math.BigDecimal.double2bigDecimal
 import scala.math.BigDecimal.int2bigDecimal
 import scala.math.BigDecimal.javaBigDecimal2bigDecimal
 import scala.math.BigDecimal.long2bigDecimal
-import scala.reflect.ClassTag
 
 import io.getquill.Spec
 import io.getquill.ast.{ Query => _, _ }
@@ -767,11 +766,11 @@ class QuotationSpec extends Spec {
       }
       "type param" - {
         "simple" in {
-          def test[T: ClassTag] = quote(query[T])
+          def test[T: QueryMeta] = quote(query[T])
           test[TestEntity].ast mustEqual Entity("TestEntity")
         }
         "nested" in {
-          def test[T: ClassTag] = quote(query[T].map(t => 1))
+          def test[T: QueryMeta] = quote(query[T].map(t => 1))
           test[TestEntity].ast mustEqual Map(Entity("TestEntity"), Ident("t"), Constant(1))
         }
       }
