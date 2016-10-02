@@ -187,7 +187,7 @@ Alternatively, the identifiers can be customized:
 
 ```scala
 val circles = quote {
-  query[Circle].schema(_.entity("circle_table").columns(_.radius -> "radius_column"))
+  querySchema[Circle]("circle_table", _.radius -> "radius_column")
 }
 
 val q = quote {
@@ -205,16 +205,15 @@ case class Circle(radius: Int)
 case class Rectangle(length: Int, width: Int)
 object schema {
   val circles = quote {
-    query[Circle].schema(
-        _.entity("circle_table")
-        .columns(_.radius -> "radius_column"))
+    querySchema[Circle](
+        "circle_table",
+        _.radius -> "radius_column")
   }
   val rectangles = quote {
-    query[Rectangle].schema(
-        _.entity("rectangle_table")
-        .columns(
-          _.length -> "length_column",
-          _.width -> "width_column"))
+    querySchema[Rectangle](
+        "rectangle_table",
+        _.length -> "length_column",
+        _.width -> "width_column")
   }
 }
 ```
@@ -254,13 +253,12 @@ case class Contact(phone: String, address: String) extends Embedded
 case class Person(id: Int, name: String, homeContact: Contact, workContact: Contact)
 
 val q = quote {
-  query[Person].schema(
-    _.columns(
-      _.homeContact.phone   -> "homePhone",
-      _.homeContact.address -> "homeAdress",
-      _.workContact.phone   -> "workPhone",
-      _.workContact.address -> "workAdress"
-    ) 
+  querySchema[Person](
+    "Person",
+    _.homeContact.phone   -> "homePhone",
+    _.homeContact.address -> "homeAdress",
+    _.workContact.phone   -> "workPhone",
+    _.workContact.address -> "workAdress"
   )
 }
 
@@ -985,7 +983,7 @@ case class MySchema(c: MyContext) {
   import c._
   val people = quote {
 
-    query[Person].schema(_.entity("people"))
+    querySchema[Person]("people")
   }
 }
 
@@ -1009,7 +1007,7 @@ trait MySchema {
   import c._
 
   val people = quote {
-    query[Person].schema(_.entity("people"))
+    querySchema[Person]("people")
   }
 }
 
