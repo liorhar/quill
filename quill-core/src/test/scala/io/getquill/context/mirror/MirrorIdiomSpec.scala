@@ -15,29 +15,29 @@ class MirrorIdiomSpec extends Spec {
 
   implicit val naming = Literal
 
-  "shows schema" - {
-    "table" in {
-      val q = quote {
-        query[TestEntity].schema(_.entity("test"))
-      }
-      stmt"${(q.ast: Ast).token}" mustEqual
-        stmt"""query[TestEntity].schema(_.entity("test"))"""
-    }
-    "columns" in {
-      val q = quote {
-        query[TestEntity].schema(_.columns(_.i -> "'i", _.o -> "'o"))
-      }
-      stmt"${(q.ast: Ast).token}" mustEqual
-        stmt"""query[TestEntity].schema(_.columns(_.i -> "'i", _.o -> "'o"))"""
-    }
-    "composed" in {
-      val q = quote {
-        query[TestEntity].schema(_.entity("entity_alias").columns(_.s -> "s_alias", _.i -> "i_alias"))
-      }
-      stmt"${(q.ast: Ast).token}" mustEqual
-        stmt"""query[TestEntity].schema(_.entity("entity_alias").columns(_.s -> "s_alias", _.i -> "i_alias"))"""
-    }
-  }
+//  "shows schema" - {
+//    "table" in {
+//      val q = quote {
+//        query[TestEntity].schema(_.entity("test"))
+//      }
+//      stmt"${(q.ast: Ast).token}" mustEqual
+//        stmt"""query[TestEntity].schema(_.entity("test"))"""
+//    }
+//    "columns" in {
+//      val q = quote {
+//        query[TestEntity].schema(_.columns(_.i -> "'i", _.o -> "'o"))
+//      }
+//      stmt"${(q.ast: Ast).token}" mustEqual
+//        stmt"""query[TestEntity].schema(_.columns(_.i -> "'i", _.o -> "'o"))"""
+//    }
+//    "composed" in {
+//      val q = quote {
+//        query[TestEntity].schema(_.entity("entity_alias").columns(_.s -> "s_alias", _.i -> "i_alias"))
+//      }
+//      stmt"${(q.ast: Ast).token}" mustEqual
+//        stmt"""query[TestEntity].schema(_.entity("entity_alias").columns(_.s -> "s_alias", _.i -> "i_alias"))"""
+//    }
+//  }
 
   "shows queries" - {
 

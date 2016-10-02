@@ -8,9 +8,11 @@ import scala.annotation.compileTimeOnly
 private[dsl] trait QueryDsl {
   dsl: CoreDsl =>
 
+  def query[T]: EntityQuery[T] = macro QueryDslMacro.expandEntity[T]
+  
   @compileTimeOnly(NonQuotedException.message)
-  def query[T]: EntityQuery[T] = NonQuotedException()
-
+  def query[T](entity: String, propertyAlias: (T => (Any, String))*): EntityQuery[T] = NonQuotedException()
+    
   sealed trait Query[+T] {
 
     def map[R](f: T => R): Query[R]
@@ -61,8 +63,6 @@ private[dsl] trait QueryDsl {
   sealed trait EntityQuery[T]
     extends Query[T] {
 
-    def schema(f: Schema[T] => Schema[T]): EntityQuery[T]
-
     override def withFilter(f: T => Boolean): EntityQuery[T]
     override def filter(f: T => Boolean): EntityQuery[T]
     override def map[R](f: T => R): EntityQuery[R]
@@ -75,22 +75,17 @@ private[dsl] trait QueryDsl {
 
     def delete: Delete[T]
   }
+  
+  sealed trait Action[E]
 
-  sealed trait Schema[T] {
-    def entity(alias: String): Schema[T]
-    def columns(propertyAlias: (T => (Any, String))*): Schema[T]
-  }
-
-  sealed trait Action[Entity]
-
-  sealed trait Insert[Entity] extends Action[Entity] {
+  sealed trait Insert[E] extends Action[E] {
     @compileTimeOnly(NonQuotedException.message)
-    def returning[R](f: Entity => R): ActionReturning[Entity, R] = NonQuotedException()
+    def returning[R](f: E => R): ActionReturning[E, R] = NonQuotedException()
   }
 
-  sealed trait ActionReturning[Entity, Output] extends Action[Entity]
-  sealed trait Update[Entity] extends Action[Entity]
-  sealed trait Delete[Entity] extends Action[Entity]
+  sealed trait ActionReturning[E, Output] extends Action[E]
+  sealed trait Update[E] extends Action[E]
+  sealed trait Delete[E] extends Action[E]
 
   sealed trait BatchAction[+A <: Action[_]]
 }

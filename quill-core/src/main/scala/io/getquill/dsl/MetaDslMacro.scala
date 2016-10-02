@@ -31,9 +31,14 @@ class MetaDslMacro(val c: MacroContext) {
       }
     """
 
-  def materializeDeleteMeta[T](implicit t: WeakTypeTag[T]): Tree =
-    q"new ${c.prefix}.DeleteMeta[$t] {}"
-
+  def materializeEntityMeta[T](implicit t: WeakTypeTag[T]): Tree =
+    q"""
+      new ${c.prefix}.EntityMeta[$t] {
+        override val entity =
+          ${c.prefix}.quote(${c.prefix}.query[$t](${t.tpe.typeSymbol.name.decodedName.toString}))
+      }
+    """
+    
   private def expandQuery[T](value: Value)(implicit t: WeakTypeTag[T]) = {
     val elements = flatten(q"x", value)
     q"${c.prefix}.quote((q: ${c.prefix}.Query[$t]) => q.map(x => io.getquill.dsl.UnlimitedTuple(..$elements)))"

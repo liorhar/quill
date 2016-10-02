@@ -16,19 +16,11 @@ class StatefulTransformerSpec extends Spec {
   "transforms asts using a transformation state" - {
     "query" - {
       "entity" in {
-        val ast: Ast = Entity("a")
+        val ast: Ast = Entity("a", Nil)
         Subject(Nil)(ast) match {
           case (at, att) =>
             at mustEqual ast
             att.state mustEqual Nil
-        }
-      }
-      "configuredEntity" in {
-        val ast: Ast = ConfiguredEntity(Entity("a"))
-        Subject(Nil, Entity("a") -> Entity("a'"))(ast) match {
-          case (at, att) =>
-            at mustEqual ConfiguredEntity(Entity("a'"))
-            att.state mustEqual List(Entity("a"))
         }
       }
       "filter" in {
@@ -282,28 +274,28 @@ class StatefulTransformerSpec extends Spec {
       }
     }
 
-    "block" in {
-      val ast: Ast = Block(List(
-        Val(Ident("a"), Entity("a")),
-        Val(Ident("b"), Entity("b"))
-      ))
-      Subject(Nil, Entity("a") -> Entity("b"), Entity("b") -> Entity("c"))(ast) match {
-        case (at, att) =>
-          at mustEqual Block(List(
-            Val(Ident("a"), Entity("b")),
-            Val(Ident("b"), Entity("c"))
-          ))
-          att.state mustEqual List(Entity("a"), Entity("b"))
-      }
-    }
-
-    "val" in {
-      val ast: Ast = Val(Ident("a"), Entity("a"))
-      Subject(Nil, Entity("a") -> Entity("b"))(ast) match {
-        case (at, att) =>
-          at mustEqual Val(Ident("a"), Entity("b"))
-          att.state mustEqual List(Entity("a"))
-      }
-    }
+//    "block" in {
+//      val ast: Ast = Block(List(
+//        Val(Ident("a"), Entity("a")),
+//        Val(Ident("b"), Entity("b"))
+//      ))
+//      Subject(Nil, Entity("a") -> Entity("b"), Entity("b") -> Entity("c"))(ast) match {
+//        case (at, att) =>
+//          at mustEqual Block(List(
+//            Val(Ident("a"), Entity("b")),
+//            Val(Ident("b"), Entity("c"))
+//          ))
+//          att.state mustEqual List(Entity("a"), Entity("b"))
+//      }
+//    }
+//
+//    "val" in {
+//      val ast: Ast = Val(Ident("a"), Entity("a"))
+//      Subject(Nil, Entity("a") -> Entity("b"))(ast) match {
+//        case (at, att) =>
+//          at mustEqual Val(Ident("a"), Entity("b"))
+//          att.state mustEqual List(Entity("a"))
+//      }
+//    }
   }
 }
